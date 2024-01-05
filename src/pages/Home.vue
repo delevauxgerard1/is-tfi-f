@@ -7,9 +7,8 @@
         <!-- Content -->
         <main class="grow">
 
-            <Logos/>
-            <Table/>
-            
+            <Logos />
+            <Table />
         </main>
 
     </div>
@@ -19,5 +18,5 @@
 import Header from '../components/Header.vue'
 import Logos from '../components/Logos.Vue'
 import Table from '../components/Table.vue'
-
+import { ref } from 'vue'
 </script>
