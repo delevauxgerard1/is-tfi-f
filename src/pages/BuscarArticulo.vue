@@ -1,7 +1,6 @@
 <!-- BuscarArticulo.vue -->
 <template>
   <div>
-    
     <!-- Formulario (visible solo cuando el formulario está abierto) -->
     <ArticuloForm v-if="mostrarFormulario" @cerrarFormulario="ocultarFormulario" />
   </div>
