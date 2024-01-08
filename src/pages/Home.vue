@@ -5,18 +5,19 @@
         <Header />
 
         <!-- Content -->
-        <main class="grow">
+        <div class="grow flex flex-col lg:flex-row">
+            <main class="grow">
 
-            <Logos />
-            <Table />
-        </main>
+                <Table />
+    
+            </main>
+        </div>
 
     </div>
 </template>
 
 <script setup>
 import Header from '../components/Header.vue'
-import Logos from '../components/Logos.Vue'
 import Table from '../components/Table.vue'
 import { ref } from 'vue'
 </script>

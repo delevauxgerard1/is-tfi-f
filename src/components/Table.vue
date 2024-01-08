@@ -1,5 +1,5 @@
 <template>
-    <div class="relative max-w-6xl mx-auto px-4 sm:px-6 pt-4 md:pt-0">
+    <div class="relative max-w-full mx-auto px-4 sm:px-6 pt-4 md:pt-0">
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                 <thead class="text-xs text-gray-700 uppercase bg-indigo-300 dark:bg-gray-700 dark:text-gray-400">
@@ -106,6 +106,7 @@
 
 <script setup>
 import { ref } from 'vue';
+import axios from 'axios';
 
 const articles = [
     { id: 1, brand: 'Nike', name: 'Zapatillas Air Max', size: '42', color: 'Negro', price: 120 },
@@ -159,4 +160,17 @@ const saveArticleChanges = () => {
     }
     closeEditModal();
 };
+
+const url = "http://localhost:8080/tfib/empleados";
+
+const fetchDataWithAxios = async () => {
+    try {
+        const response = await axios.get(url);
+        console.log('Datos recibidos:', response.data);
+    } catch (error) {
+        console.error('Hubo un problema al obtener los datos:', error.message);
+    }
+};
+
+fetchDataWithAxios();
 </script>
