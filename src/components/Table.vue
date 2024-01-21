@@ -160,7 +160,7 @@ const saveArticleChanges = () => {
     }
     closeEditModal();
 };
-
+/*
 const url = "http://localhost:8080/tfib/empleados";
 
 const fetchDataWithAxios = async () => {
@@ -172,5 +172,5 @@ const fetchDataWithAxios = async () => {
     }
 };
 
-fetchDataWithAxios();
+fetchDataWithAxios();*/
 </script>
