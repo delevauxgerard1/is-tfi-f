@@ -108,6 +108,20 @@
 import { ref } from 'vue';
 import axios from 'axios';
 
+const url = "http://localhost:8080/tfib/articulos";
+const articles= ref ([]);
+
+const fetchDataWithAxios = async () => {
+    try {
+        const response = await axios.get(url);
+        console.log('Datos recibidos:', response.data);
+        articles.value=response.data;
+          
+    } catch (error) {
+        console.error('Hubo un problema al obtener los datos:', error.message);
+    }
+};
+/*
 const articles = [
     { id: 1, brand: 'Nike', name: 'Zapatillas Air Max', size: '42', color: 'Negro', price: 120 },
     { id: 2, brand: 'Adidas', name: 'Remera Estampada', size: 'M', color: 'Blanco', price: 30 },
@@ -120,7 +134,7 @@ const articles = [
     { id: 9, brand: 'Under Armour', name: 'Camiseta Sin Mangas', size: 'M', color: 'Azul', price: 28 },
     { id: 10, brand: 'ASICS', name: 'Zapatillas Gel-Kayano', size: '41', color: 'Blanco', price: 150 },
 ];
-
+*/
 const showModal = ref(false);
 const articleToDelete = ref({});
 
@@ -160,7 +174,7 @@ const saveArticleChanges = () => {
     }
     closeEditModal();
 };
-
+/*
 const url = "http://localhost:8080/tfib/empleados";
 
 const fetchDataWithAxios = async () => {
@@ -171,6 +185,6 @@ const fetchDataWithAxios = async () => {
         console.error('Hubo un problema al obtener los datos:', error.message);
     }
 };
-
+*/
 fetchDataWithAxios();
 </script>
