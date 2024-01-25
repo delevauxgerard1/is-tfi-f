@@ -28,10 +28,10 @@
                             {{ article.descripcion }}
                         </th>
                         <td class="px-6 py-4 font-medium text-gray-700">
-                            {{ article.talle }}
+                            {{ article.talle.descripcion }}
                         </td>
                         <td class="px-6 py-4 font-medium text-gray-700">
-                            {{ article.color }}
+                            {{ article.color.descripcion }}
                         </td>
                         <td class="px-6 py-4 font-medium text-green-500">
                             ${{ article.costo}}
