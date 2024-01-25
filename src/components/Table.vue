@@ -1,17 +1,23 @@
 <template>
-    <div class="relative max-w-full mx-auto px-4 sm:px-6 pt-4 md:pt-0">
+    <div class="relative w-5/6 mx-auto px-4 sm:px-6 pt-4 md:pt-0">
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                 <thead class="text-xs text-gray-700 uppercase bg-indigo-300 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                         <th scope="col" class="px-6 py-3 font-bold">
-                            Artículo
+                            Descripción
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Marca
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Color
                         </th>
                         <th scope="col" class="px-6 py-3">
                             Talle
                         </th>
                         <th scope="col" class="px-6 py-3">
-                            Color
+                            Cantidad
                         </th>
                         <th scope="col" class="px-6 py-3">
                             Precio
@@ -22,7 +28,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="article in articles" :key="article.id"
+                    <tr
                         class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-indigo-100 dark:hover:bg-gray-600">
                         <th scope="row" class="px-6 py-4 font-medium text-gray-700 whitespace-nowrap dark:text-white">
                             {{ article.marca.descripcion }} - {{ article.descripcion }}
@@ -36,12 +42,11 @@
                         <td class="px-6 py-4 font-medium text-green-500">
                             ${{ article.costo}}
                         </td>
-                        <td class="px-6 py-4 font-medium text-gray-700">
+                        <td class="px-6 py-4 font-medium">
                             <font-awesome-icon
-                                @click="openEditModal(article.id, article.brand, article.name, article.size, article.color, article.price)"
                                 class="pr-2" :icon="['fas', 'pen-to-square']"
                                 :style="{ fontSize: '20px', color: '#fbbf24', cursor: 'pointer' }" />
-                            <font-awesome-icon @click="toggleModal(article.id, article.brand, article.name)"
+                            <font-awesome-icon
                                 :icon="['fas', 'trash-can']"
                                 :style="{ fontSize: '20px', color: '#ef4444', cursor: 'pointer' }" />
                         </td>
@@ -50,57 +55,6 @@
             </table>
         </div>
 
-        <!-- Editar -->
-        <div class="fixed inset-0 flex items-center justify-center" :class="{ 'hidden': !showEditModal }">
-            <div class="absolute inset-0 bg-gray-800 opacity-50"></div>
-            <div class="bg-white p-8 rounded-lg z-10">
-                <div class="text-center p-3 flex-auto justify-center leading-6">
-                    Editar artículo: {{ editedArticle.name }}
-                </div>
-                <div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="col-span-1">
-                            <label for="editBrand" class="block text-sm font-medium text-gray-700">Marca</label>
-                            <input type="text" id="editBrand" v-model="editedArticle.brand"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                placeholder="John" required>
-                        </div>
-                        <div class="col-span-1">
-                            <label for="editName" class="block text-sm font-medium text-gray-700">Nombre</label>
-                            <input type="text" id="editName" v-model="editedArticle.name"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                placeholder="John" required>
-                        </div>
-                    </div>
-                    <div class="mt-4 flex justify-end">
-                        <button @click="saveArticleChanges"
-                            class="mr-2 px-4 py-2 bg-green-500 text-white rounded-md">Guardar</button>
-                        <button @click="closeEditModal" class="px-4 py-2 bg-gray-300 rounded-md">Cancelar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Eliminar -->
-        <div class="fixed inset-0 flex items-center justify-center" :class="{ 'hidden': !showModal }">
-            <div class="absolute inset-0 bg-gray-800 opacity-50"></div>
-            <div class="bg-white p-8 rounded-lg z-10">
-                <div class="text-center p-3 flex-auto justify-center leading-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 flex items-center text-red-500 mx-auto"
-                        viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd"
-                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                            clip-rule="evenodd" />
-                    </svg>
-                </div>
-                <p>¿Estás seguro de que quieres eliminar el artículo "{{ articleToDelete.brand }} - {{ articleToDelete.name
-                }}"?</p>
-                <div class="mt-4 flex justify-end">
-                    <button @click="deleteArticle" class="mr-2 px-4 py-2 bg-red-500 text-white rounded-md">Eliminar</button>
-                    <button @click="closeModal" class="px-4 py-2 bg-gray-300 rounded-md">Cancelar</button>
-                </div>
-            </div>
-        </div>
     </div>
 </template>
 
