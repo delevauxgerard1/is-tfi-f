@@ -25,7 +25,7 @@
                     <tr v-for="article in articles" :key="article.id"
                         class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-indigo-100 dark:hover:bg-gray-600">
                         <th scope="row" class="px-6 py-4 font-medium text-gray-700 whitespace-nowrap dark:text-white">
-                            {{ article.marca }} - {{ article.descripcion }}
+                            {{ article.descripcion }}
                         </th>
                         <td class="px-6 py-4 font-medium text-gray-700">
                             {{ article.talle }}
