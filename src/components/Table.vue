@@ -25,16 +25,16 @@
                     <tr v-for="article in articles" :key="article.id"
                         class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-indigo-100 dark:hover:bg-gray-600">
                         <th scope="row" class="px-6 py-4 font-medium text-gray-700 whitespace-nowrap dark:text-white">
-                            {{ article.brand }} - {{ article.name }}
+                            {{ article.marca }} - {{ article.descripcion }}
                         </th>
                         <td class="px-6 py-4 font-medium text-gray-700">
-                            {{ article.size }}
+                            {{ article.talle }}
                         </td>
                         <td class="px-6 py-4 font-medium text-gray-700">
                             {{ article.color }}
                         </td>
                         <td class="px-6 py-4 font-medium text-green-500">
-                            ${{ article.price }}
+                            ${{ article.costo}}
                         </td>
                         <td class="px-6 py-4 font-medium text-gray-700">
                             <font-awesome-icon
@@ -120,7 +120,8 @@ const fetchDataWithAxios = async () => {
     } catch (error) {
         console.error('Hubo un problema al obtener los datos:', error.message);
     }
-};
+    
+};fetchDataWithAxios();
 /*
 const articles = [
     { id: 1, brand: 'Nike', name: 'Zapatillas Air Max', size: '42', color: 'Negro', price: 120 },
@@ -174,17 +175,5 @@ const saveArticleChanges = () => {
     }
     closeEditModal();
 };
-/*
-const url = "http://localhost:8080/tfib/empleados";
 
-const fetchDataWithAxios = async () => {
-    try {
-        const response = await axios.get(url);
-        console.log('Datos recibidos:', response.data);
-    } catch (error) {
-        console.error('Hubo un problema al obtener los datos:', error.message);
-    }
-};
-*/
-fetchDataWithAxios();
 </script>
