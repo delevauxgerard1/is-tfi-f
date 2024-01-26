@@ -10,6 +10,9 @@
                         <th scope="col" class="px-6 py-3 font-bold">
                             Artículo
                         </th>
+                        <th scope="col" class="px-6 py-3 font-bold">
+                            Categoría
+                        </th>
                         <th scope="col" class="px-6 py-3">
                             Precio
                         </th>
@@ -25,7 +28,10 @@
                             {{ article.codigo }}
                         </th>
                         <td class="px-6 py-4 font-medium text-gray-700">
-                            {{ article.descripcion }}
+                            {{ article.marca.descripcion }} - {{ article.descripcion }}
+                        </td>
+                        <td class="px-6 py-4 font-medium text-gray-700">
+                            {{ article.categoria.descripcion }}
                         </td>
                         <td class="px-6 py-4 font-medium text-green-500">
                             ${{ article.costo }}
