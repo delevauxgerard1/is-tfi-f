@@ -16,7 +16,7 @@
                             </svg>
                         </div>
                         
-                      <fwb-input type="search" id="default-search" v-model="descripcion" @input="buscarArticulo"
+                      <fwb-input type="search"  id="default-search" v-model="descripcion" @input="buscarArticulo"
                             placeholder="Escriba nombre del artículo">
                             <template #prefix>
                                 <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none"
@@ -26,6 +26,7 @@
                                 </svg>
                             </template>
                             
+>
                         </fwb-input>
                         <div v-if="resultados.length > 0"
                             class="mt-2 w-full absolute left-0 bg-white dark:bg-gray-700 border border-gray-300 rounded-md z-10">
@@ -34,6 +35,7 @@
                                     @click="seleccionarArticulo(resultado)"
                                     class="p-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 text-black">
                                     {{ resultado.descripcion }}
+                                
                                 </li>
                             </ul>
                         </div>
@@ -115,6 +117,7 @@ const buscarArticulo = async () => {
     try {
         const response = await axios.get(`http://localhost:8080/tfib/buscarPorDescripcion/${descripcion.value}`);
         resultados.value = response.data;
+        console.log(resultados);
     } catch (error) {
         console.error(error);
     }
@@ -123,12 +126,15 @@ const buscarArticulo = async () => {
 const seleccionarArticulo = (articulo) => {
     // Puedes realizar alguna acción al seleccionar un artículo, como cargarlo en algún estado o realizar otra operación.
     console.log('Artículo seleccionado:', articulo);
+    
     //descripcion.value = valor;
     // Actualizar la variable descripcion con el valor del artículo seleccionado
+    
     descripcion.value = articulo.descripcion;
-
     // Limpiar los resultados y la descripción después de seleccionar
-    //resultados.value = [];
+    resultados.value = [];
+    floating_email.value=articulo.descripcion;
+    floating_password.value=articulo.marca.descripcion;
     //descripcion.value = "";
 };
 
