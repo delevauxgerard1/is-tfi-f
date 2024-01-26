@@ -115,7 +115,6 @@ const buscarArticulo = async () => {
     try {
         const response = await axios.get(`http://localhost:8080/tfib/buscarPorDescripcion/${descripcion.value}`);
         resultados.value = response.data;
-        resultados.value = false;
     } catch (error) {
         console.error(error);
     }
