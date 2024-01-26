@@ -127,17 +127,14 @@ const seleccionarArticulo = (articulo) => {
     // Puedes realizar alguna acción al seleccionar un artículo, como cargarlo en algún estado o realizar otra operación.
     console.log('Artículo seleccionado:', articulo);
     
-    //descripcion.value = valor;
-    // Actualizar la variable descripcion con el valor del artículo seleccionado
+    descripcion.value = articulo.descripcion;  //toma el valor y lo muestra en el buscador
     
-    descripcion.value = articulo.descripcion;
     // Limpiar los resultados y la descripción después de seleccionar
     resultados.value = [];
-    floating_email.value=articulo.descripcion;
-    floating_password.value=articulo.marca.descripcion;
-    //descripcion.value = "";
+    floating_email.value=articulo.descripcion; //para q muestre la descrip
+    floating_password.value=articulo.marca.descripcion; //para q muestre la marca
+
 };
 
 
 </script>
-
