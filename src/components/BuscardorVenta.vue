@@ -128,7 +128,7 @@ const seleccionarArticulo = (articulo) => {
     descripcion.value = articulo.descripcion;
 
     // Limpiar los resultados y la descripción después de seleccionar
-    //resultados.value = [];
+    resultados.value = [];
     //descripcion.value = "";
 };
 
