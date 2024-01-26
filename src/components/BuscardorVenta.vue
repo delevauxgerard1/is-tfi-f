@@ -15,7 +15,8 @@
                                     d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
                             </svg>
                         </div>
-                        <fwb-input type="search" id="default-search" v-model="descripcion" @input="buscarArticulo"
+                        
+                      <fwb-input type="search" id="default-search" v-model="descripcion" @input="buscarArticulo"
                             placeholder="Escriba nombre del artículo">
                             <template #prefix>
                                 <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none"
@@ -24,6 +25,7 @@
                                         stroke-linejoin="round" stroke-width="2" />
                                 </svg>
                             </template>
+                            
                         </fwb-input>
                         <div v-if="resultados.length > 0"
                             class="mt-2 w-full absolute left-0 bg-white dark:bg-gray-700 border border-gray-300 rounded-md z-10">
@@ -101,6 +103,7 @@
 
 
 <script setup>
+
 import axios from 'axios';
 import { ref } from 'vue';
 import { FwbInput } from 'flowbite-vue'
@@ -120,9 +123,15 @@ const buscarArticulo = async () => {
 const seleccionarArticulo = (articulo) => {
     // Puedes realizar alguna acción al seleccionar un artículo, como cargarlo en algún estado o realizar otra operación.
     console.log('Artículo seleccionado:', articulo);
+    //descripcion.value = valor;
+    // Actualizar la variable descripcion con el valor del artículo seleccionado
+    descripcion.value = articulo.descripcion;
+
     // Limpiar los resultados y la descripción después de seleccionar
-    resultados.value = [];
-    descripcion.value = '';
+    //resultados.value = [];
+    //descripcion.value = "";
 };
 
+
 </script>
+
