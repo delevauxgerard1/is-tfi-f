@@ -13,6 +13,10 @@
                         <th scope="col" class="px-6 py-3 font-bold">
                             Categoría
                         </th>
+
+                        <th scope="col" class="px-6 py-3">
+                            Tipo de Talle
+                        </th>
                         <th scope="col" class="px-6 py-3">
                             Precio
                         </th>
@@ -34,7 +38,7 @@
                             {{ article.categoria.descripcion }}
                         </td>
                         <td class="px-6 py-4 font-medium text-green-500">
-                            ${{ article.costo }}
+                            ${{ article.precioDeVenta }}
                         </td>
                         <td class="px-6 py-4 font-medium text-gray-700">
                             <font-awesome-icon
@@ -69,7 +73,6 @@ const fetchDataWithAxios = async () => {
     }
 };
 fetchDataWithAxios();
-
 
 const showModal = ref(false);
 const articleToDelete = ref({});
