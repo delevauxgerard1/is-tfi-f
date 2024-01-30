@@ -129,6 +129,9 @@ const seleccionarArticulo = (articulo) => {
 
     // Limpiar los resultados y la descripción después de seleccionar
     resultados.value = [];
+    floating_email.value=articulo.descripcion; //para q muestre la descrip
+    floating_password.value=articulo.marca.descripcion; //para q muestre la marca
+
     //descripcion.value = "";
 };
 
