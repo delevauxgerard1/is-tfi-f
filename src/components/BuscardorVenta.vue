@@ -114,6 +114,9 @@ const buscarArticulo = async () => {
 
 const colores = ref([]);
 const talles = ref([]);
+const selectedColor = ref(null);  
+const selectedTalle = ref(null);  
+
 const obtenerColoresYTallesPorDescripcion = (descripcion) => {
     axios.get(`http://localhost:8080/tfib/obtenerTallesPorDescripcion/${descripcion}`)
     .then((tallesResponse) => {
