@@ -42,43 +42,35 @@
                 </form>
                 <form class="max-w-md mx-auto">
                     <div class="relative z-0 w-full mb-5 group pl-4 pr-4">
-                        <input type="text" name="floating_email" id="floating_email"
+                        <input type="text" name="Campo_Nombre_articulo" id="Campo_Nombre_articulo"
                             class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                             placeholder=" " required />
-                        <label for="floating_email"
+                        <label for="Campo_Nombre_articulo"
                             class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 origin-[0] rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Nombre
                             artículo</label>
                     </div>
                     <div class="relative z-0 w-full mb-5 group pl-4 pr-4">
-                        <input type="text" name="floating_password" id="floating_password"
+                        <input type="text" name="Campo_Marca" id="Campo_Marca"
                             class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                             placeholder=" " required />
-                        <label for="floating_password"
+                        <label for="Campo_Marca"
                             class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Marca</label>
                     </div>
                     <div class="grid md:grid-cols-2 md:gap-6">
                         <div class="relative z-0 w-full mb-5 group pl-4 pr-4">
 
-                            <label for="countries"
+                            <label for="Select_Color"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Color</label>
-                            <select id="countries"
+                            <select id="Select_Color" v-model="selectedColor"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                <option selected>Blanco</option>
-                                <option value="Negro">Negro</option>
-                                <option value="Rojo">Rojo</option>
-                                <option value="Amarillo">Amarillo</option>
+                                <option v-for="color in colores" :key="color.id" :value="color.id">{{ color.descripcion }}</option>
                             </select>
                         </div>
                         <div class="relative z-0 w-full mb-5 group pl-4 pr-4">
-                            <label for="countries"
+                            <label for="Select_Talle"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Talle</label>
-                            <select id="countries"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                <option selected>M</option>
-                                <option value="US">L</option>
-                                <option value="CA">XL</option>
-                                <option value="FR">S</option>
-                                <option value="DE">XS</option>
+                            <select id="Select_Talle" v-model="selectedTalle" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <option v-for="talle in talles" :key="talle.id" :value="talle.id">{{ talle.descripcion }}</option>
                             </select>
                         </div>
                     </div>
@@ -120,21 +112,53 @@ const buscarArticulo = async () => {
     }
 };
 
-const seleccionarArticulo = (articulo) => {
-    // Puedes realizar alguna acción al seleccionar un artículo, como cargarlo en algún estado o realizar otra operación.
-    console.log('Artículo seleccionado:', articulo);
-    //descripcion.value = valor;
-    // Actualizar la variable descripcion con el valor del artículo seleccionado
-    descripcion.value = articulo.descripcion;
+const colores = ref([]);
+const talles = ref([]);
+const obtenerColoresYTallesPorDescripcion = (descripcion) => {
+    axios.get(`http://localhost:8080/tfib/obtenerTallesPorDescripcion/${descripcion}`)
+    .then((tallesResponse) => {
+            talles.value = tallesResponse.data;
 
-    // Limpiar los resultados y la descripción después de seleccionar
-    resultados.value = [];
-    floating_email.value=articulo.descripcion; //para q muestre la descrip
-    floating_password.value=articulo.marca.descripcion; //para q muestre la marca
+            // Actualiza el estado con los talles
+           // talles.forEach((talle) => {
+              //  this.$refs.campo_talle.options.add(new Option(talle.tipoTalle.descripcion, tipoTalle.id));
+           // });
+            
+        })
+        .catch((error) => {
+            console.error(error);
+            
+        });
 
-    //descripcion.value = "";
+    axios.get(`http://localhost:8080/tfib/obtenerColoresPorDescripcion/${descripcion}`)
+        .then((coloresResponse) => {
+            colores.value = coloresResponse.data;
+
+
+            // Actualiza el estado con los colores.
+            //colores.value.forEach((color) => {
+            //    this.$refs.campo_color.options.add(new Option(color.tipoColor.descripcion, tipoColor.id));
+           // });
+        })
+        .catch((error) => {
+            console.error(error);
+            
+        });
 };
 
 
+const seleccionarArticulo = (articulo) => {
+    // Puedes realizar alguna acción al seleccionar un artículo, como cargarlo en algún estado o realizar otra operación.
+    console.log('Artículo seleccionado:', articulo);
+    
+    descripcion.value = articulo.descripcion;  //toma el valor y lo muestra en el buscador
+    // Llamar al método para obtener talles y colores por descripción
+    obtenerColoresYTallesPorDescripcion(articulo.descripcion);
+    // Limpiar los resultados y la descripción después de seleccionar
+    resultados.value = [];
+    Campo_Nombre_articulo.value=articulo.descripcion; //para q muestre la descrip
+    Campo_Marca.value=articulo.marca.descripcion; //para q muestre la marca
+   
+};
 </script>
 
