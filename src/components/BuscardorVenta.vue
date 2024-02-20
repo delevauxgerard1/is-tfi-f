@@ -74,17 +74,22 @@
                             </select>
                         </div>
                     </div>
+                    
                     <div class="grid md:grid-cols-2 md:gap-6">
                         <div class="relative z-0 w-full mb-5 group lg:col-start-2 pl-4 pr-4">
+        <input type="number" v-model="selectedCantidad" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+        <label for="floating_last_name" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Cantidad</label>
+    </div>
+                      <!--  <div class="relative z-0 w-full mb-5 group lg:col-start-2 pl-4 pr-4">
                             <input type="text" name="floating_last_name" id="floating_last_name"
                                 class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                                 placeholder=" " required />
                             <label for="floating_last_name"
                                 class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Cantidad</label>
-                        </div>
+                        </div>-->
                     </div>
                     <div class="flex justify-end pb-4 pl-4 pr-4">
-                        <button type="submit"
+                        <button type="submit" @click="agregarArticuloSeleccionado"
                             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Agregar</button>
                     </div>
                 </form>
@@ -100,8 +105,14 @@ import axios from 'axios';
 import { ref } from 'vue';
 import { FwbInput } from 'flowbite-vue'
 
+// Define las variables reactivas
 const descripcion = ref('');
 const resultados = ref([]);
+const selectedColor = ref(null);
+const selectedTalle = ref(null);
+const selectedCantidad = ref(null);
+const colores = ref([]);
+const talles = ref([]);
 
 const buscarArticulo = async () => {
     try {
@@ -112,10 +123,8 @@ const buscarArticulo = async () => {
     }
 };
 
-const colores = ref([]);
-const talles = ref([]);
-const selectedColor = ref(null);  
-const selectedTalle = ref(null);  
+
+
 
 const obtenerColoresYTallesPorDescripcion = (descripcion) => {
     axios.get(`http://localhost:8080/tfib/obtenerTallesPorDescripcion/${descripcion}`)
@@ -136,12 +145,6 @@ const obtenerColoresYTallesPorDescripcion = (descripcion) => {
     axios.get(`http://localhost:8080/tfib/obtenerColoresPorDescripcion/${descripcion}`)
         .then((coloresResponse) => {
             colores.value = coloresResponse.data;
-
-
-            // Actualiza el estado con los colores.
-            //colores.value.forEach((color) => {
-            //    this.$refs.campo_color.options.add(new Option(color.tipoColor.descripcion, tipoColor.id));
-           // });
         })
         .catch((error) => {
             console.error(error);
@@ -151,17 +154,29 @@ const obtenerColoresYTallesPorDescripcion = (descripcion) => {
 
 
 const seleccionarArticulo = (articulo) => {
-    // Puedes realizar alguna acción al seleccionar un artículo, como cargarlo en algún estado o realizar otra operación.
+    
     console.log('Artículo seleccionado:', articulo);
     
-    descripcion.value = articulo.descripcion;  //toma el valor y lo muestra en el buscador
-    // Llamar al método para obtener talles y colores por descripción
+    descripcion.value = articulo.descripcion;  
+    
     obtenerColoresYTallesPorDescripcion(articulo.descripcion);
-    // Limpiar los resultados y la descripción después de seleccionar
+    
     resultados.value = [];
     Campo_Nombre_articulo.value=articulo.descripcion; //para q muestre la descrip
     Campo_Marca.value=articulo.marca.descripcion; //para q muestre la marca
    
+    //const selectedCantidad = ref(null);
+  };        
+    const agregarArticuloSeleccionado = () => {
+    emit('articulo-seleccionado', { 
+        brand: selectedMarca.value,
+        name: descripcion.value,
+        size: selectedTalle.value,
+        color: selectedColor.value,
+        cantidad: selectedCantidad.value, 
+        price:0,
+    });
 };
+
 </script>
 

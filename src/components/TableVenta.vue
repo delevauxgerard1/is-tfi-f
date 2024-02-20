@@ -55,12 +55,21 @@
 </template>
 
 <script setup>
-const articles = [
-    { id: 1, brand: 'Nike', name: 'Zapatillas Air Max', size: '42', color: 'Negro', cantidad: 1, price: 120 },
-    { id: 2, brand: 'Adidas', name: 'Remera Estampada', size: 'M', color: 'Blanco', cantidad: 1, price: 30 },
-    { id: 3, brand: 'Puma', name: 'Short Deportivo', size: 'L', color: 'Azul', cantidad: 1, price: 25 },
-    { id: 4, brand: 'Converse', name: 'Zapatillas Chuck Taylor', size: '39', color: 'Rojo', cantidad: 1, price: 80 },
-];
+import { onMounted } from 'vue';
+import { provide } from 'vue';
+
+const articles = [];
+
+const agregarArticuloATabla = (articulo) => {
+    articles.push(articulo);
+};
+
+onMounted(() => {
+    const handleArticuloSeleccionado = (articulo) => {
+        agregarArticuloATabla(articulo);
+    };
+    provide('agregarArticuloATabla', agregarArticuloATabla);
+});
 
 const calculateTotalPrice = () => {
     return articles.reduce((total, article) => total + article.price, 0);
