@@ -207,7 +207,6 @@ const seleccionarArticulo = (articulo) => {
     Campo_Nombre_articulo.value = articulo.descripcion;
     Campo_Marca.value = articulo.marca.descripcion;
 
-    // Establecer los valores seleccionados en los refs
     selectedColor.value = articulo.color;
     selectedTalle.value = articulo.talle;
 };
@@ -217,8 +216,8 @@ const agregarArticulo = () => {
         id: articles.value.length + 1,
         marca: Campo_Marca.value,
         descripcion: Campo_Nombre_articulo.value,
-        talle: selectedTalle.value, // No necesitas acceder a la descripción aquí
-        color: selectedColor.value, // No necesitas acceder a la descripción aquí
+        talle: selectedTalle.value,
+        color: selectedColor.value,
         cantidad: parseInt(floating_last_name.value),
     };
     articles.value.push(nuevoArticulo);
@@ -227,5 +226,6 @@ const agregarArticulo = () => {
     Campo_Marca.value = '';
     floating_last_name.value = '';
 };
+
 </script>
 
