@@ -1,7 +1,6 @@
 <template>
     <div class="grid grid-cols-6 gap-4">
 
-
         <div class="col-span-4 pl-12 pt-4">
             <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                 <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -19,15 +18,16 @@
                             <th scope="col" class="px-6 py-3">
                                 Cantidad
                             </th>
-                            <!-- <th scope="col" class="px-6 py-3">
-                            Precio
-                        </th> -->
+                            <th scope="col" class="px-6 py-3">
+                                Total
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="article in articles" :key="article.id"
                             class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-indigo-100 dark:hover:bg-gray-600">
-                            <th scope="row" class="px-6 py-4 font-medium text-gray-700 whitespace-nowrap dark:text-white">
+                            <th scope="row"
+                                class="px-6 py-4 font-medium text-gray-700 whitespace-nowrap dark:text-white">
                                 {{ article.marca }} - {{ article.descripcion }}
                             </th>
                             <td class="px-6 py-4 font-medium text-gray-700">
@@ -36,21 +36,20 @@
                             <td class="px-6 py-4 font-medium text-gray-700">
                                 {{ article.color.descripcion }}
                             </td>
-                            <td class="px-12 py-4 font-medium text-orange-600">
+                            <td class="px-12 py-4 font-medium">
                                 {{ article.cantidad }}
                             </td>
-                            <!-- <td class="px-6 py-4 font-medium text-green-500">
-                            ${{ article.price }}
-                        </td> -->
+                            <td class="px-6 py-4 font-medium">
+                                ${{ article.totalVenta }}
+                            </td>
                         </tr>
                     </tbody>
                 </table>
                 <div class="mt-4 text-xl font-bold text-green-600 flex justify-between pr-8 pb-4 pl-4">
-                    <button type="submit"
-                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Realizar
-                        venta</button>
+                    <fwb-button @click="showModal" type="submit"
+                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Continuar</fwb-button>
                     <div class="mt-4 text-xl font-bold text-green-600">
-                        Total: $
+                        Total: ${{ totalAcumulado }}
                     </div>
                 </div>
 
@@ -61,30 +60,12 @@
                 <div class="w-full max-w-xl mx-auto flex flex-col justify-start px-4 sm:px-6 pb-20 lg:pt-4">
                     <div class="relative overflow-x-auto shadow-md border-2 sm:rounded-lg">
 
-                        <form class="pt-4 pr-4 pl-4 pb-4">
+                        <form class="pt-4 pr-4 pl-4 pb-4" @submit.prevent>
                             <label for="default-search"
                                 class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Buscar</label>
                             <div class="relative">
-
-                                <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                            stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                                    </svg>
-                                </div>
-
-                                <fwb-input type="search" id="default-search" v-model="descripcion" @input="buscarArticulo"
-                                    placeholder="Escriba nombre del artículo">
-                                    <template #prefix>
-                                        <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round"
-                                                stroke-linejoin="round" stroke-width="2" />
-                                        </svg>
-                                    </template>
-
-                                </fwb-input>
+                                <fwb-input type="search" id="default-search" v-model="descripcion"
+                                    @input="buscarArticulo" placeholder="Escriba nombre del artículo"></fwb-input>
                                 <div v-if="resultados.length > 0"
                                     class="mt-2 w-full absolute left-0 bg-white dark:bg-gray-700 border border-gray-300 rounded-md z-10">
                                     <ul>
@@ -95,9 +76,9 @@
                                         </li>
                                     </ul>
                                 </div>
-
                             </div>
                         </form>
+
                         <form class="max-w-md mx-auto" @submit.prevent="agregarArticulo">
                             <div class="relative z-0 w-full mb-5 group pl-4 pr-4">
                                 <input type="text" name="Campo_Nombre_articulo" id="Campo_Nombre_articulo"
@@ -121,8 +102,9 @@
                                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Color</label>
                                     <select id="Select_Color" v-model="selectedColor"
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                        <option v-for="color in colores" :key="color.id" :value="color">{{ color.descripcion
-                                        }}
+                                        <option v-for="color in colores" :key="color.id" :value="color">{{
+                            color.descripcion
+                        }}
                                         </option>
                                     </select>
                                 </div>
@@ -131,8 +113,9 @@
                                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Talle</label>
                                     <select id="Select_Talle" v-model="selectedTalle"
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                        <option v-for="talle in talles" :key="talle.id" :value="talle">{{ talle.descripcion
-                                        }}
+                                        <option v-for="talle in talles" :key="talle.id" :value="talle">{{
+                            talle.descripcion
+                        }}
                                         </option>
                                     </select>
                                 </div>
@@ -141,9 +124,12 @@
                                 <div class="relative z-0 w-full mb-5 group lg:col-start-2 pl-4 pr-4">
                                     <input type="text" name="floating_last_name" id="floating_last_name"
                                         class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                                        placeholder=" " required />
+                                        placeholder=" " />
                                     <label for="floating_last_name"
-                                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Cantidad</label>
+                                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                                        Cantidad
+                                        <span class="text-lg font-bold cantidad-stock"></span>
+                                    </label>
                                 </div>
                             </div>
                             <div class="flex justify-end pb-4 pl-4 pr-4">
@@ -157,13 +143,232 @@
         </div>
 
     </div>
+
+    <!-- Modal de cliente -->
+    <fwb-modal v-if="isShowModal" @close="closeModal" persistent>
+        <template #header>
+            <div class="flex items-center text-lg font-bold">
+                Datos del cliente
+            </div>
+        </template>
+
+        <template #body>
+            <form class="pb-1 pr-4 pl-4" @submit.prevent="buscarCliente">
+                <div class="relative">
+                    <fwb-input type="search" id="clienteSearch" v-model="clienteSearch"
+                        placeholder="Escriba cuit del cliente"></fwb-input>
+                </div>
+            </form>
+            <div v-if="clienteNoEncontrado" class="text-red-500 text-center">No se encontró un cliente con ese CUIT.
+            </div>
+            <div v-if="clienteEncontrado" class="text-green-500 text-center">Cliente encontrado.</div>
+
+            <form @submit.prevent="agregarArticulo">
+                <div class="grid md:grid-cols-2 grid-cols-2 md:gap-2 pt-6">
+                    <div class="relative z-0 w-full mb-5 group pl-4 pr-4 col-span-1">
+                        <input type="text" name="clienteNombre" id="clienteNombre" v-model="clienteNombre"
+                            class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                            placeholder=" " required disabled />
+                        <label for="clienteNombre"
+                            class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 origin-[0] rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Nombre
+                            o Razón Social</label>
+                    </div>
+
+                    <div class="relative z-0 w-full mb-5 group pl-4 pr-4 col-span-1">
+                        <input type="text" name="clienteCuit" id="clienteCuit" v-model="clienteCuit"
+                            class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                            placeholder=" " required disabled />
+                        <label for="clienteCuit"
+                            class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 origin-[0] rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">CUIT</label>
+                    </div>
+
+                    <div class="relative z-0 w-full group pl-4 pr-4 col-span-1">
+                        <input type="text" name="clienteDireccion" id="clienteDireccion" v-model="clienteDireccion"
+                            class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                            placeholder=" " required disabled />
+                        <label for="clienteDireccion"
+                            class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 origin-[0] rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Dirección</label>
+                    </div>
+                </div>
+            </form>
+        </template>
+
+        <template #footer>
+            <div class="flex justify-between">
+                <fwb-button @click="closeModal" color="red">
+                    Cancelar
+                </fwb-button>
+                <fwb-button @click="showModalPagos" color="green">
+                    Continuar a pago
+                </fwb-button>
+            </div>
+        </template>
+    </fwb-modal>
+
+    <!-- Modal de pagos -->
+    <fwb-modal v-if="pagoShowModal" persistent>
+        <template #header>
+
+            <div class="flex items-center text-lg font-bold">
+                Monto a pagar:
+                <template v-if="!pagoSeleccionado">
+                    <label class="pl-2 text-lg text-red-500">Seleccione método de pago</label>
+                </template>
+                <template v-else>
+                    <label class="pl-2 text-2xl text-green-500" v-if="pagoSeleccionado === 'Efectivo'">{{ totalAcumulado
+                        }}</label>
+                    <label class="pl-2 text-2xl text-green-500" v-if="pagoSeleccionado === 'Tarjeta débito'">{{
+                            totalAcumulado }}</label>
+                    <label class="pl-2 text-2xl text-green-500" v-if="pagoSeleccionado === 'Tarjeta crédito'">{{
+                            totalAcumulado }}</label>
+                </template>
+            </div>
+
+        </template>
+
+        <template #body>
+            <form class="pb-1 pr-4 pl-4">
+                <div class="relative">
+
+
+                    <div class="max-w-sm mx-auto">
+                        <label class="block mb-2 text-gray-900 dark:text-white text-lg font-bold pt-2">Tipo de
+                            pago</label>
+                        <select id="Select_Talle" label="Seleccione método de pago" v-model="pagoSeleccionado"
+                            class="w-60 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <option>Seleccione método de pago</option>
+                            <option v-for="metodoPago in metodosPagos" :key="metodoPago.id" :value="metodoPago">{{
+                            metodoPago }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div v-if="pagoSeleccionado === 'Tarjeta débito' || pagoSeleccionado === 'Tarjeta crédito'">
+                        <form class="max-w-sm mx-auto pt-4">
+                            <div class="text-lg font-bold pb-2">Número de tarjeta </div>
+                            <div class="relative">
+                                <input type="text" id="numeroTarjeta" v-model="numeroTarjeta"
+                                    @input="numeroTarjetaFormateador"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pe-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    placeholder="4242 4242 4242 4242"
+                                    pattern="^[0-9]{4}\s?[0-9]{4}\s?[0-9]{4}\s?[0-9]{4}$" maxlength="19" required />
+                                <div
+                                    class="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
+                                    <svg fill="none" class="h-6 text-[#1434CB] dark:text-white" viewBox="0 0 36 21">
+                                        <path fill="currentColor"
+                                            d="M23.315 4.773c-2.542 0-4.813 1.3-4.813 3.705 0 2.756 4.028 2.947 4.028 4.332 0 .583-.676 1.105-1.832 1.105-1.64 0-2.866-.73-2.866-.73l-.524 2.426s1.412.616 3.286.616c2.78 0 4.966-1.365 4.966-3.81 0-2.913-4.045-3.097-4.045-4.383 0-.457.555-.957 1.708-.957 1.3 0 2.36.53 2.36.53l.514-2.343s-1.154-.491-2.782-.491zM.062 4.95L0 5.303s1.07.193 2.032.579c1.24.442 1.329.7 1.537 1.499l2.276 8.664h3.05l4.7-11.095h-3.043l-3.02 7.543L6.3 6.1c-.113-.732-.686-1.15-1.386-1.15H.062zm14.757 0l-2.387 11.095h2.902l2.38-11.096h-2.895zm16.187 0c-.7 0-1.07.37-1.342 1.016L25.41 16.045h3.044l.589-1.68h3.708l.358 1.68h2.685L33.453 4.95h-2.447zm.396 2.997l.902 4.164h-2.417l1.515-4.164z" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="text-lg font-bold pt-2">Vencimiento</div>
+                            <div class="grid grid-cols-3 gap-4 pt-2">
+                                <div class="col-span-1">
+                                    <select id="mesSeleccionado" v-model="mesSeleccionado"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pe-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        required>
+                                        <option value="">Mes</option>
+                                        <option value="01">01 - Enero</option>
+                                        <option value="02">02 - Febrero</option>
+                                        <option value="03">03 - Marzo</option>
+                                        <option value="04">04 - Abril</option>
+                                        <option value="05">05 - Mayo</option>
+                                        <option value="06">06 - Junio</option>
+                                        <option value="07">07 - Julio</option>
+                                        <option value="08">08 - Agosto</option>
+                                        <option value="09">09 - Septiembre</option>
+                                        <option value="10">1O - ctubre</option>
+                                        <option value="11">11 - Noviembre</option>
+                                        <option value="12">12 - Diciembre</option>
+                                    </select>
+                                </div>
+                                <div class="col-span-1">
+                                    <select id="añoSeleccionado" v-model="añoSeleccionado"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pe-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        required>
+                                        <option value="">Año</option>
+                                        <option value="24">2024</option>
+                                        <option value="25">2025</option>
+                                        <option value="26">2026</option>
+                                        <option value="27">2027</option>
+                                        <option value="28">2028</option>
+                                        <option value="29">2029</option>
+                                        <option value="30">2030</option>
+                                        <option value="31">2031</option>
+                                        <option value="32">2032</option>
+                                        <option value="33">2033</option>
+                                        <option value="34">2034</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="text-lg font-bold pt-2">Código de seguridad</div>
+                            <div class="grid grid-cols-3 gap-4 pt-2">
+                                <div class="col-span-1">
+                                    <input type="number" id="cvvInput" aria-describedby="helper-text-explanation"
+                                        v-model="cvvInput"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        placeholder="CVV" required />
+                                </div>
+                            </div>
+                            <div class="text-lg font-bold pt-2">DNI</div>
+                            <div class="grid grid-cols-3 gap-4 pt-2">
+                                <div class="col-span-1">
+                                    <input type="number" id="dniInput" aria-describedby="helper-text-explanation"
+                                        v-model="dniInput"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        placeholder="DNI" />
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </form>
+        </template>
+
+        <template #footer>
+            <div class="flex justify-between">
+                <div>
+                    <fwb-button @click="closeModal" color="red" class="mr-4">
+                        Cancelar
+                    </fwb-button>
+                    <fwb-button @click="reOpenClientModal" color="blue">
+                        Volver a Cliente
+                    </fwb-button>
+                </div>
+                <div>
+                    <fwb-button @click="guardarDatos" color="green">
+                        Aceptar
+                    </fwb-button>
+                </div>
+            </div>
+        </template>
+    </fwb-modal>
 </template>
+
 
 
 <script setup>
 import axios from 'axios';
 import { ref } from 'vue';
-import { FwbInput } from 'flowbite-vue';
+import { FwbInput, FwbButton, FwbModal, FwbSelect, FwbAlert } from 'flowbite-vue';
+import { watch } from 'vue';
+
+/* Variables para cliente */
+const clienteSearch = ref('');
+const clienteId = ref();
+const clienteNombre = ref('');
+const clienteCuit = ref();
+const clienteDireccion = ref('');
+const clienteNoEncontrado = ref(false);
+const clienteEncontrado = ref(false);
+
+/* Variables para pagos */
+const metodosPagos = ref([]);
+const pagoSeleccionado = ref('');
+const numeroTarjeta = ref();
+const añoSeleccionado = ref('');
+const mesSeleccionado = ref('');
+const cvvInput = ref('');
+const dniInput = ref('');
 
 const descripcion = ref('');
 const resultados = ref([]);
@@ -172,13 +377,166 @@ const colores = ref([]);
 const talles = ref([]);
 const selectedColor = ref(null);
 const selectedTalle = ref(null);
+const cantidadStock = ref(null);
+const totalAcumulado = ref(0);
+let codigoArticuloSeleccionado = null;
+let precioVentaArticuloSeleccionado = null;
+
+const isShowModal = ref(false)
+const pagoShowModal = ref(false)
+
+function closeModal() {
+    isShowModal.value = false;
+    pagoShowModal.value = false;
+}
+
+async function showModal() {
+    isShowModal.value = true;
+    await metodosDePago();
+}
+
+function showModalPagos() {
+    pagoShowModal.value = true;
+    isShowModal.value = false;
+}
+
+function reOpenClientModal() {
+    pagoShowModal.value = false;
+    isShowModal.value = true;
+}
+
+const metodosDePago = async () => {
+    try {
+        const response = await axios.get(`http://localhost:8080/tfib/listarTipoPago`);
+        metodosPagos.value = response.data;
+        console.log(metodosPagos);
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+/* Guardar datos de tarjeta */
+function guardarDatos() {
+
+    if (pagoSeleccionado.value != 'Efectivo') {
+        const datosTarjeta = {
+            numero: numeroTarjeta.value,
+            vencimiento: {
+                mes: mesSeleccionado.value,
+                año: añoSeleccionado.value
+            },
+            cvv: cvvInput.value,
+            dni: dniInput.value
+        };
+        const montoTotal = totalAcumulado.value;
+        const idCliente = clienteId.value;
+
+        const lineasDeVenta = articles.value;
+
+        const lineasDeVentaObjeto = {};
+
+        lineasDeVenta.forEach((item, index) => {
+            lineasDeVentaObjeto[`lineaDeVenta${index}`] = {
+                cantidad: item.cantidad,
+                descripcion: item.descripcion,
+                id: item.id,
+                marca: item.marca,
+                totalVenta: item.totalVenta
+            };
+        });
+
+        const datosCompletos = {
+            datosTarjeta: datosTarjeta,
+            montoTotal: montoTotal,
+            idCliente: idCliente,
+            lineasDeVenta: lineasDeVentaObjeto
+        };
+
+        const datosCompletosJSON = JSON.stringify(datosCompletos);
+
+        console.log('Datos completos', datosCompletosJSON);
+
+        numeroTarjeta.value = '';
+        mesSeleccionado.value = '';
+        añoSeleccionado.value = '';
+        cvvInput.value = '';
+        dniInput.value = '';
+    } else {
+        const montoTotal = totalAcumulado.value;
+        const idCliente = clienteId.value;
+        const lineasDeVenta = articles.value;
+
+        const lineasDeVentaObjeto = {};
+
+        lineasDeVenta.forEach((item, index) => {
+            lineasDeVentaObjeto[`lineaDeVenta${index}`] = {
+                cantidad: item.cantidad,
+                descripcion: item.descripcion,
+                id: item.id,
+                marca: item.marca,
+                totalVenta: item.totalVenta
+            };
+        });
+
+        const datosCompletos = {
+            montoTotal: montoTotal,
+            idCliente: idCliente,
+            lineasDeVenta: lineasDeVentaObjeto
+        };
+
+        const datosCompletosJSON = JSON.stringify(datosCompletos);
+
+        console.log('No se seleccionó una tarjeta de débito o crédito, pero este es el monto y las líneas de venta:', datosCompletosJSON);
+    }
+}
 
 const buscarArticulo = async () => {
     try {
         const response = await axios.get(`http://localhost:8080/tfib/buscarPorDescripcion/${descripcion.value}`);
         resultados.value = response.data;
+        console.log('peticion enviada');
     } catch (error) {
         console.error(error);
+    }
+};
+
+const seleccionarArticulo = (articulo) => {
+    descripcion.value = articulo.descripcion;
+    obtenerColoresYTallesPorDescripcion(articulo.descripcion);
+    resultados.value = [];
+    Campo_Nombre_articulo.value = articulo.descripcion;
+    Campo_Marca.value = articulo.marca.descripcion;
+
+    selectedColor.value = articulo.color;
+    selectedTalle.value = articulo.talle;
+    codigoArticuloSeleccionado = articulo.codigo;
+
+    precioVentaArticuloSeleccionado = parseFloat(articulo.precioDeVenta).toFixed(2);
+};
+
+const buscarCliente = async () => {
+    try {
+        const response = await axios.get(`http://localhost:8080/tfib/buscarCliente/${clienteSearch.value}`);
+
+        if (response.data) {
+            const clienteEncontrado = response.data;
+            clienteId.value = clienteEncontrado.id;
+            clienteNombre.value = clienteEncontrado.nombre;
+            clienteCuit.value = clienteEncontrado.cuit;
+            clienteDireccion.value = clienteEncontrado.domicilio;
+            clienteEncontrado.value = true;
+            clienteNoEncontrado.value = false;
+            console.log(clienteEncontrado);
+        } else {
+            console.log('No existe cliente con ese cuit');
+            clienteNoEncontrado.value = true;
+            clienteEncontrado.value = false;
+            clienteNombre.value = '';
+            clienteCuit.value = '';
+            clienteDireccion.value = '';
+        }
+    } catch (error) {
+        console.log('Ocurrió un error al buscar el cliente:', error);
     }
 };
 
@@ -200,32 +558,77 @@ const obtenerColoresYTallesPorDescripcion = (descripcion) => {
         });
 };
 
-const seleccionarArticulo = (articulo) => {
-    descripcion.value = articulo.descripcion;
-    obtenerColoresYTallesPorDescripcion(articulo.descripcion);
-    resultados.value = [];
-    Campo_Nombre_articulo.value = articulo.descripcion;
-    Campo_Marca.value = articulo.marca.descripcion;
+watch([selectedColor, selectedTalle], ([newColor, newTalle]) => {
+    if (newColor && newTalle) {
+        consultarStock();
+    }
+});
 
-    selectedColor.value = articulo.color;
-    selectedTalle.value = articulo.talle;
+const consultarStock = () => {
+    const idArticulo = codigoArticuloSeleccionado;
+    const idColor = selectedColor.value.id;
+    const idTalle = selectedTalle.value.id;
+
+    axios.get(`http://localhost:8080/tfib/obtenerStock/${idArticulo}/${idColor}/${idTalle}`)
+        .then((stockResponse) => {
+            cantidadStock.value = stockResponse.data.cantidad;
+            console.log('Cantidad de stock obtenida:', cantidadStock.value);
+        })
+        .catch((error) => {
+            console.error('Error al obtener el stock:', error);
+        });
+
 };
+
+watch(cantidadStock, (newCantidadStock, oldCantidadStock) => {
+    const spanElement = document.querySelector('.cantidad-stock');
+    if (spanElement) {
+        spanElement.textContent = newCantidadStock >= 1 ? newCantidadStock : 'Sin Stock';
+        if (newCantidadStock >= 1) {
+            spanElement.classList.remove('text-red-500');
+            spanElement.classList.add('text-green-500');
+        } else {
+            spanElement.classList.remove('text-green-500');
+            spanElement.classList.add('text-red-500');
+        }
+    }
+});
 
 const agregarArticulo = () => {
-    const nuevoArticulo = {
-        id: articles.value.length + 1,
-        marca: Campo_Marca.value,
-        descripcion: Campo_Nombre_articulo.value,
-        talle: selectedTalle.value,
-        color: selectedColor.value,
-        cantidad: parseInt(floating_last_name.value),
-    };
-    articles.value.push(nuevoArticulo);
-    console.log(articles.value);
-    Campo_Nombre_articulo.value = '';
-    Campo_Marca.value = '';
-    floating_last_name.value = '';
+    const cantidadIngresada = parseInt(floating_last_name.value);
+    if (cantidadIngresada <= cantidadStock.value) {
+        const totalVenta = cantidadIngresada * precioVentaArticuloSeleccionado;
+        const nuevoArticulo = {
+            id: articles.value.length + 1,
+            marca: Campo_Marca.value,
+            descripcion: Campo_Nombre_articulo.value,
+            talle: selectedTalle.value,
+            color: selectedColor.value,
+            cantidad: cantidadIngresada,
+            totalVenta: totalVenta
+        };
+
+        articles.value.push(nuevoArticulo);
+
+        Campo_Nombre_articulo.value = '';
+        Campo_Marca.value = '';
+        floating_last_name.value = '';
+        descripcion.value = '';
+        selectedColor.value = null;
+        selectedTalle.value = null;
+        cantidadStock.value = null;
+        totalAcumulado.value += totalVenta;
+
+        console.log(articles);
+    } else {
+        alert('La cantidad ingresada supera el stock disponible.');
+    }
+
 };
 
+const numeroTarjetaFormateador = (event) => {
+    const trimmedValue = event.target.value.replace(/\s+/g, '');
+    const formattedValue = trimmedValue.replace(/(\d{4})/g, '$1 ').trim();
+    numeroTarjeta.value = formattedValue;
+};
 </script>
-
