@@ -189,6 +189,33 @@
                         <label for="clienteDireccion"
                             class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 origin-[0] rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Dirección</label>
                     </div>
+                    <div class="relative z-0 w-full group pl-4 pr-4 col-span-1 pb-4">
+                        <select id="condicionTributariaSeleccionada"
+                            v-model="condicionTributariaSeleccionada"
+                            class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <option>Seleccione condición tributaria</option>
+                            <option v-for="condicionTributaria in condicionesTributariasLista"
+                                :key="condicionTributaria.id" :value="condicionTributaria">{{
+                            condicionTributaria.descripcion }}</option>
+                        </select>
+                    </div>
+                    <div class="relative z-0 w-full group pl-4 pr-4 col-span-1"
+                        v-if="condicionTributariaSeleccionada && (condicionTributariaSeleccionada.descripcion === 'Responsable inscripto' || condicionTributariaSeleccionada.descripcion === 'Monotributo')">
+                        <input type="text" v-model="tipoFactura"
+                            class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                            placeholder=" " required disabled />
+                        <label for="clienteDireccion"
+                            class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 origin-[0] rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Tipo
+                            de factura</label>
+                    </div>
+                    <div class="relative z-0 w-full group pl-4 pr-4 col-span-1" v-else>
+                        <input type="text" v-model="tipoFactura"
+                            class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                            placeholder=" " required disabled />
+                        <label for="clienteDireccion"
+                            class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 origin-[0] rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Tipo
+                            de factura</label>
+                    </div>
                 </div>
             </form>
         </template>
@@ -360,9 +387,12 @@ const clienteCuit = ref();
 const clienteDireccion = ref('');
 const clienteNoEncontrado = ref(false);
 const clienteEncontrado = ref(false);
+const condicionTributariaSeleccionada = ref('');
+const tipoFactura = ref('');
 
 /* Variables para pagos */
 const metodosPagos = ref([]);
+const condicionesTributariasLista = ref([]);
 const pagoSeleccionado = ref('');
 const numeroTarjeta = ref();
 const añoSeleccionado = ref('');
@@ -393,6 +423,7 @@ function closeModal() {
 async function showModal() {
     isShowModal.value = true;
     await metodosDePago();
+    await condicionesTributarias();
 }
 
 function showModalPagos() {
@@ -405,18 +436,174 @@ function reOpenClientModal() {
     isShowModal.value = true;
 }
 
-const metodosDePago = async () => {
+watch(condicionTributariaSeleccionada, (newVal) => {
+    if (newVal && (newVal.descripcion === 'Responsable inscripto' || newVal.descripcion === 'Monotributo')) {
+        tipoFactura.value = 'Factura A';
+    } else {
+        tipoFactura.value = 'Factura B';
+    }
+    console.log(tipoFactura);
+});
+
+const condicionesTributarias = async () => {
     try {
-        const response = await axios.get(`http://localhost:8080/tfib/listarTipoPago`);
-        metodosPagos.value = response.data;
-        console.log(metodosPagos);
+        const response = await axios.get(`http://localhost:8080/tfib/condiciontributaria`);
+        condicionesTributariasLista.value = response.data;
+        console.log(condicionesTributariasLista.value);
     } catch (error) {
         console.error(error);
     }
 };
 
+const metodosDePago = async () => {
+    try {
+        const response = await axios.get(`http://localhost:8080/tfib/listarTipoPago`);
+        metodosPagos.value = response.data;
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+function generarComprobante(datosCompletos) {
+    console.log('Esto es en generar comprobante', datosCompletos);
+    const fecha = new Date().toLocaleDateString();
+    const hora = new Date().toLocaleTimeString();
+
+    let lineasDeVentaHTML = '';
+    for (const linea in datosCompletos.lineasDeVenta) {
+        lineasDeVentaHTML += `
+            <tr>
+                <td>${datosCompletos.lineasDeVenta[linea].descripcion}</td>
+                <td>${datosCompletos.lineasDeVenta[linea].color}</td>
+                <td>${datosCompletos.lineasDeVenta[linea].talle}</td>
+                <td>${datosCompletos.lineasDeVenta[linea].cantidad}</td>
+                <td>${datosCompletos.lineasDeVenta[linea].totalVenta}</td>
+            </tr>
+        `;
+    }
+
+    const comprobanteHTML = `
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Factura</title>
+            <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .invoice-header::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            top: 50%;
+            border-top: 1px solid #ccc;
+            z-index: -1;
+        }
+        .store-name,
+        h1 {
+            position: relative;
+            z-index: 1;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .total {
+            margin-top: 20px;
+            text-align: right;
+        }
+        .tipo-factura {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+
+    </head>
+    <body>
+        <div class="container">
+            <div class="invoice-header">
+                <h1>La tienda</h1>
+                <div class="tipo-factura"><h3>${datosCompletos.tipoFacturaCliente}</h3></div>
+                <h1>Factura</h1>
+            </div>
+            <p><strong>Fecha y Hora:</strong> ${new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} <strong>Hora:</strong> ${new Date().toLocaleTimeString('es-ES')}</p>
+            <hr>
+            <p><strong>Nombre cliente:</strong> ${datosCompletos.datosCliente.nombreCliente} <strong>Dirección:</strong> ${datosCompletos.datosCliente.direccionCliente}</p>
+            <p><strong>CUIT cliente:</strong> ${datosCompletos.datosCliente.cuitCliente}</p>
+            <hr>
+            <p><strong>Condición tributaria:</strong> ${datosCompletos.condicionTributaria.descripcion}</p>
+            <hr>
+            <p><strong>Tipo de pago:</strong> ${pagoSeleccionado.value}</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Descripción</th>
+                        <th>Color</th>
+                        <th>Talle</th>
+                        <th>Cantidad</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${lineasDeVentaHTML}
+                </tbody>
+            </table>
+            <p class="total"><strong>Monto total:</strong> ${datosCompletos.montoTotal}</p>
+        </div>
+    </body>
+    </html>
+`;
+
+    const ventanaComprobante = window.open("", "Comprobante de compra", "width=600,height=400");
+    ventanaComprobante.document.write(comprobanteHTML);
+}
+
+
 /* Guardar datos de tarjeta */
 function guardarDatos() {
+    let datosCompletos;
+    let tipoFacturaCliente = tipoFactura.value;
+    console.log(tipoFacturaCliente);
 
     if (pagoSeleccionado.value != 'Efectivo') {
         const datosTarjeta = {
@@ -430,6 +617,10 @@ function guardarDatos() {
         };
         const montoTotal = totalAcumulado.value;
         const idCliente = clienteId.value;
+        const cuitCliente = clienteCuit.value;
+        const direccionCliente = clienteDireccion.value;
+        const nombreCliente = clienteNombre.value;
+        const condicionTributaria = condicionTributariaSeleccionada.value;
 
         const lineasDeVenta = articles.value;
 
@@ -440,32 +631,46 @@ function guardarDatos() {
                 cantidad: item.cantidad,
                 descripcion: item.descripcion,
                 id: item.id,
+                color: item.color.descripcion,
+                talle: item.talle.descripcion,
                 marca: item.marca,
                 totalVenta: item.totalVenta
             };
         });
 
-        const datosCompletos = {
+        const datosCliente = {
+            idCliente: idCliente,
+            cuitCliente: cuitCliente,
+            direccionCliente: direccionCliente,
+            nombreCliente: nombreCliente,
+        };
+
+        datosCompletos = {
+            condicionTributaria: condicionTributaria,
             datosTarjeta: datosTarjeta,
             montoTotal: montoTotal,
-            idCliente: idCliente,
-            lineasDeVenta: lineasDeVentaObjeto
+            datosCliente: datosCliente,
+            lineasDeVenta: lineasDeVentaObjeto,
+            tipoFacturaCliente: tipoFacturaCliente
         };
 
         const datosCompletosJSON = JSON.stringify(datosCompletos);
-
-        console.log('Datos completos', datosCompletosJSON);
 
         numeroTarjeta.value = '';
         mesSeleccionado.value = '';
         añoSeleccionado.value = '';
         cvvInput.value = '';
         dniInput.value = '';
+
+        console.log(datosCompletosJSON);
     } else {
         const montoTotal = totalAcumulado.value;
         const idCliente = clienteId.value;
         const lineasDeVenta = articles.value;
-
+        const cuitCliente = clienteCuit.value;
+        const direccionCliente = clienteDireccion.value;
+        const nombreCliente = clienteNombre.value;
+        const condicionTributaria = condicionTributariaSeleccionada.value;
         const lineasDeVentaObjeto = {};
 
         lineasDeVenta.forEach((item, index) => {
@@ -473,22 +678,39 @@ function guardarDatos() {
                 cantidad: item.cantidad,
                 descripcion: item.descripcion,
                 id: item.id,
+                color: item.color.descripcion,
+                talle: item.talle.descripcion,
                 marca: item.marca,
                 totalVenta: item.totalVenta
             };
         });
 
-        const datosCompletos = {
+        const datosCliente = {
+            idCliente: idCliente,
+            cuitCliente: cuitCliente,
+            direccionCliente: direccionCliente,
+            nombreCliente: nombreCliente,
+        };
+
+        datosCompletos = {
+            condicionTributaria: condicionTributaria,
             montoTotal: montoTotal,
             idCliente: idCliente,
-            lineasDeVenta: lineasDeVentaObjeto
+            lineasDeVenta: lineasDeVentaObjeto,
+            datosCliente: datosCliente,
+            tipoFacturaCliente: tipoFacturaCliente
         };
 
         const datosCompletosJSON = JSON.stringify(datosCompletos);
 
-        console.log('No se seleccionó una tarjeta de débito o crédito, pero este es el monto y las líneas de venta:', datosCompletosJSON);
+        //console.log('No se seleccionó una tarjeta de débito o crédito, pero este es el monto y las líneas de venta:', datosCompletos);
+        console.log(datosCompletosJSON);
     }
+
+
+    generarComprobante(datosCompletos);
 }
+
 
 const buscarArticulo = async () => {
     try {
@@ -526,7 +748,6 @@ const buscarCliente = async () => {
             clienteDireccion.value = clienteEncontrado.domicilio;
             clienteEncontrado.value = true;
             clienteNoEncontrado.value = false;
-            console.log(clienteEncontrado);
         } else {
             console.log('No existe cliente con ese cuit');
             clienteNoEncontrado.value = true;
@@ -619,7 +840,7 @@ const agregarArticulo = () => {
         cantidadStock.value = null;
         totalAcumulado.value += totalVenta;
 
-        console.log(articles);
+        console.log(articles.value);
     } else {
         alert('La cantidad ingresada supera el stock disponible.');
     }
