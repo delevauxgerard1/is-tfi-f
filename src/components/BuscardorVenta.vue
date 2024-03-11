@@ -190,8 +190,7 @@
                             class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 origin-[0] rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Dirección</label>
                     </div>
                     <div class="relative z-0 w-full group pl-4 pr-4 col-span-1 pb-4">
-                        <select id="condicionTributariaSeleccionada"
-                            v-model="condicionTributariaSeleccionada"
+                        <select id="condicionTributariaSeleccionada" v-model="condicionTributariaSeleccionada"
                             class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <option>Seleccione condición tributaria</option>
                             <option v-for="condicionTributaria in condicionesTributariasLista"
@@ -225,7 +224,7 @@
                 <fwb-button @click="closeModal" color="red">
                     Cancelar
                 </fwb-button>
-                <fwb-button @click="showModalPagos" color="green">
+                <fwb-button @click="showModalPagos" color="green" v-if="clienteCuit != ''">
                     Continuar a pago
                 </fwb-button>
             </div>
@@ -239,7 +238,6 @@
             <div class="flex items-center text-lg font-bold">
                 Monto a pagar:
                 <template v-if="!pagoSeleccionado">
-                    <label class="pl-2 text-lg text-red-500">Seleccione método de pago</label>
                 </template>
                 <template v-else>
                     <label class="pl-2 text-2xl text-green-500" v-if="pagoSeleccionado === 'Efectivo'">{{ totalAcumulado
@@ -263,7 +261,6 @@
                             pago</label>
                         <select id="Select_Talle" label="Seleccione método de pago" v-model="pagoSeleccionado"
                             class="w-60 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <option>Seleccione método de pago</option>
                             <option v-for="metodoPago in metodosPagos" :key="metodoPago.id" :value="metodoPago">{{
                             metodoPago }}
                             </option>
@@ -362,7 +359,7 @@
                     </fwb-button>
                 </div>
                 <div>
-                    <fwb-button @click="guardarDatos" color="green">
+                    <fwb-button @click="guardarDatos" color="green" v-if="pagoSeleccionado != ''">
                         Aceptar
                     </fwb-button>
                 </div>
@@ -383,7 +380,7 @@ import { watch } from 'vue';
 const clienteSearch = ref('');
 const clienteId = ref();
 const clienteNombre = ref('');
-const clienteCuit = ref();
+const clienteCuit = ref('');
 const clienteDireccion = ref('');
 const clienteNoEncontrado = ref(false);
 const clienteEncontrado = ref(false);
@@ -442,14 +439,12 @@ watch(condicionTributariaSeleccionada, (newVal) => {
     } else {
         tipoFactura.value = 'Factura B';
     }
-    console.log(tipoFactura);
 });
 
 const condicionesTributarias = async () => {
     try {
         const response = await axios.get(`http://localhost:8080/tfib/condiciontributaria`);
         condicionesTributariasLista.value = response.data;
-        console.log(condicionesTributariasLista.value);
     } catch (error) {
         console.error(error);
     }
@@ -581,7 +576,7 @@ function generarComprobante(datosCompletos) {
                         <th>Color</th>
                         <th>Talle</th>
                         <th>Cantidad</th>
-                        <th>Total</th>
+                        <th>Sub total</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -598,16 +593,33 @@ function generarComprobante(datosCompletos) {
     ventanaComprobante.document.write(comprobanteHTML);
 }
 
+function formatearNumeroTarjeta(numero) {
+    // Eliminar espacios en blanco y guiones
+    let numeroSinEspacios = numero.replace(/\s+/g, '');
+
+    // Agrupar los caracteres en grupos de cuatro
+    let numeroFormateado = '';
+    for (let i = 0; i < numeroSinEspacios.length; i++) {
+        if (i > 0 && i % 4 === 0) {
+            numeroFormateado += ' ';
+        }
+        numeroFormateado += numeroSinEspacios[i];
+    }
+
+    return numeroFormateado;
+}
 
 /* Guardar datos de tarjeta */
 function guardarDatos() {
     let datosCompletos;
     let tipoFacturaCliente = tipoFactura.value;
-    console.log(tipoFacturaCliente);
 
     if (pagoSeleccionado.value != 'Efectivo') {
+        let numeroAformatear = numeroTarjeta.value;
+        let numeroSinEspacios = numeroAformatear.replace(/\s+/g, '');
+
         const datosTarjeta = {
-            numero: numeroTarjeta.value,
+            numero: numeroSinEspacios,
             vencimiento: {
                 mes: mesSeleccionado.value,
                 año: añoSeleccionado.value
@@ -631,7 +643,9 @@ function guardarDatos() {
                 cantidad: item.cantidad,
                 descripcion: item.descripcion,
                 id: item.id,
+                idColor: item.color.id,
                 color: item.color.descripcion,
+                idTalle: item.talle.id,
                 talle: item.talle.descripcion,
                 marca: item.marca,
                 totalVenta: item.totalVenta
@@ -651,18 +665,19 @@ function guardarDatos() {
             montoTotal: montoTotal,
             datosCliente: datosCliente,
             lineasDeVenta: lineasDeVentaObjeto,
-            tipoFacturaCliente: tipoFacturaCliente
+            tipoFacturaCliente: tipoFacturaCliente,
+            tipoPago: pagoSeleccionado.value
         };
 
         const datosCompletosJSON = JSON.stringify(datosCompletos);
+        guardarVenta(datosCompletosJSON);
+        generarComprobante(datosCompletos);
 
         numeroTarjeta.value = '';
         mesSeleccionado.value = '';
         añoSeleccionado.value = '';
         cvvInput.value = '';
         dniInput.value = '';
-
-        console.log(datosCompletosJSON);
     } else {
         const montoTotal = totalAcumulado.value;
         const idCliente = clienteId.value;
@@ -678,7 +693,9 @@ function guardarDatos() {
                 cantidad: item.cantidad,
                 descripcion: item.descripcion,
                 id: item.id,
+                idColor: item.color.id,
                 color: item.color.descripcion,
+                idTalle: item.talle.id,
                 talle: item.talle.descripcion,
                 marca: item.marca,
                 totalVenta: item.totalVenta
@@ -698,25 +715,32 @@ function guardarDatos() {
             idCliente: idCliente,
             lineasDeVenta: lineasDeVentaObjeto,
             datosCliente: datosCliente,
-            tipoFacturaCliente: tipoFacturaCliente
+            tipoFacturaCliente: tipoFacturaCliente,
+            tipoPago: pagoSeleccionado.value
         };
 
         const datosCompletosJSON = JSON.stringify(datosCompletos);
-
-        //console.log('No se seleccionó una tarjeta de débito o crédito, pero este es el monto y las líneas de venta:', datosCompletos);
-        console.log(datosCompletosJSON);
+        guardarVenta(datosCompletosJSON);
+        generarComprobante(datosCompletos);
     }
 
-
-    generarComprobante(datosCompletos);
 }
+
+const guardarVenta = async (datos) => {
+    console.log('estoy en guardar venta', datos);
+    try {
+        const response = await axios.post(`http://localhost:8080/tfib/realizarPago`, datos);
+        pago.value = response.data;
+    } catch (error) {
+        console.error(error.response.data);
+    }
+};
 
 
 const buscarArticulo = async () => {
     try {
         const response = await axios.get(`http://localhost:8080/tfib/buscarPorDescripcion/${descripcion.value}`);
         resultados.value = response.data;
-        console.log('peticion enviada');
     } catch (error) {
         console.error(error);
     }
@@ -793,7 +817,6 @@ const consultarStock = () => {
     axios.get(`http://localhost:8080/tfib/obtenerStock/${idArticulo}/${idColor}/${idTalle}`)
         .then((stockResponse) => {
             cantidadStock.value = stockResponse.data.cantidad;
-            console.log('Cantidad de stock obtenida:', cantidadStock.value);
         })
         .catch((error) => {
             console.error('Error al obtener el stock:', error);
@@ -839,8 +862,6 @@ const agregarArticulo = () => {
         selectedTalle.value = null;
         cantidadStock.value = null;
         totalAcumulado.value += totalVenta;
-
-        console.log(articles.value);
     } else {
         alert('La cantidad ingresada supera el stock disponible.');
     }
