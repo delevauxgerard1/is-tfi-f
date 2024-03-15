@@ -46,7 +46,7 @@
                     </tbody>
                 </table>
                 <div class="mt-4 text-xl font-bold text-green-600 flex justify-between pr-8 pb-4 pl-4">
-                    <fwb-button @click="showModal" type="submit"
+                    <fwb-button @click="showModal" type="submit" v-if="totalAcumulado > 0"
                         class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Continuar</fwb-button>
                     <div class="mt-4 text-xl font-bold text-green-600">
                         Total: ${{ totalAcumulado }}
@@ -61,11 +61,11 @@
                     <div class="relative overflow-x-auto shadow-md border-2 sm:rounded-lg">
 
                         <form class="pt-4 pr-4 pl-4 pb-4" @submit.prevent>
-                            <label for="default-search"
-                                class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Buscar</label>
+                            <label class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Buscar</label>
                             <div class="relative">
                                 <fwb-input type="search" id="default-search" v-model="descripcion"
-                                    @input="buscarArticulo" placeholder="Escriba nombre del artículo"></fwb-input>
+                                    @input="descripcion && buscarArticulo()" placeholder="Escriba nombre del artículo">
+                                </fwb-input>
                                 <div v-if="resultados.length > 0"
                                     class="mt-2 w-full absolute left-0 bg-white dark:bg-gray-700 border border-gray-300 rounded-md z-10">
                                     <ul>
@@ -84,7 +84,7 @@
                                 <input type="text" name="Campo_Nombre_articulo" id="Campo_Nombre_articulo"
                                     class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                                     placeholder=" " required />
-                                <label for="Campo_Nombre_articulo"
+                                <label
                                     class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 origin-[0] rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Nombre
                                     artículo</label>
                             </div>
@@ -92,13 +92,13 @@
                                 <input type="text" name="Campo_Marca" id="Campo_Marca"
                                     class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                                     placeholder=" " required />
-                                <label for="Campo_Marca"
+                                <label
                                     class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Marca</label>
                             </div>
                             <div class="grid md:grid-cols-2 md:gap-6">
                                 <div class="relative z-0 w-full mb-5 group pl-4 pr-4">
 
-                                    <label for="Select_Color"
+                                    <label
                                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Color</label>
                                     <select id="Select_Color" v-model="selectedColor"
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -109,7 +109,7 @@
                                     </select>
                                 </div>
                                 <div class="relative z-0 w-full mb-5 group pl-4 pr-4">
-                                    <label for="Select_Talle"
+                                    <label
                                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Talle</label>
                                     <select id="Select_Talle" v-model="selectedTalle"
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -125,7 +125,7 @@
                                     <input type="text" name="floating_last_name" id="floating_last_name"
                                         class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                                         placeholder=" " />
-                                    <label for="floating_last_name"
+                                    <label
                                         class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
                                         Cantidad
                                         <span class="text-lg font-bold cantidad-stock"></span>
@@ -169,7 +169,7 @@
                         <input type="text" name="clienteNombre" id="clienteNombre" v-model="clienteNombre"
                             class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                             placeholder=" " required disabled />
-                        <label for="clienteNombre"
+                        <label
                             class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 origin-[0] rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Nombre
                             o Razón Social</label>
                     </div>
@@ -186,13 +186,12 @@
                         <input type="text" name="clienteDireccion" id="clienteDireccion" v-model="clienteDireccion"
                             class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                             placeholder=" " required disabled />
-                        <label for="clienteDireccion"
+                        <label
                             class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 origin-[0] rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Dirección</label>
                     </div>
                     <div class="relative z-0 w-full group pl-4 pr-4 col-span-1 pb-4">
                         <select id="condicionTributariaSeleccionada" v-model="condicionTributariaSeleccionada"
                             class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <option>Seleccione condición tributaria</option>
                             <option v-for="condicionTributaria in condicionesTributariasLista"
                                 :key="condicionTributaria.id" :value="condicionTributaria">{{
                             condicionTributaria.descripcion }}</option>
@@ -203,7 +202,7 @@
                         <input type="text" v-model="tipoFactura"
                             class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                             placeholder=" " required disabled />
-                        <label for="clienteDireccion"
+                        <label
                             class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 origin-[0] rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Tipo
                             de factura</label>
                     </div>
@@ -211,7 +210,7 @@
                         <input type="text" v-model="tipoFactura"
                             class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                             placeholder=" " required disabled />
-                        <label for="clienteDireccion"
+                        <label
                             class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 origin-[0] rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Tipo
                             de factura</label>
                     </div>
@@ -224,7 +223,8 @@
                 <fwb-button @click="closeModal" color="red">
                     Cancelar
                 </fwb-button>
-                <fwb-button @click="showModalPagos" color="green" v-if="clienteCuit != ''">
+                <fwb-button @click="showModalPagos" color="green"
+                    v-if="clienteCuit != '' && condicionTributariaSeleccionada != ''">
                     Continuar a pago
                 </fwb-button>
             </div>
@@ -359,7 +359,8 @@
                     </fwb-button>
                 </div>
                 <div>
-                    <fwb-button @click="guardarDatos" color="green" v-if="pagoSeleccionado != ''">
+                    <fwb-button @click="guardarDatos" color="green"
+                        v-if="pagoSeleccionado === 'Efectivo' || (pagoSeleccionado !== '' && añoSeleccionado !== '' && mesSeleccionado !== '' && cvvInput !== '')">
                         Aceptar
                     </fwb-button>
                 </div>
@@ -391,7 +392,7 @@ const tipoFactura = ref('');
 const metodosPagos = ref([]);
 const condicionesTributariasLista = ref([]);
 const pagoSeleccionado = ref('');
-const numeroTarjeta = ref();
+const numeroTarjeta = ref("4507 9900 0000 4905");
 const añoSeleccionado = ref('');
 const mesSeleccionado = ref('');
 const cvvInput = ref('');
@@ -407,7 +408,7 @@ const selectedTalle = ref(null);
 const cantidadStock = ref(null);
 const totalAcumulado = ref(0);
 let codigoArticuloSeleccionado = null;
-let precioVentaArticuloSeleccionado = null;
+let precioVentaArticuloSeleccionado = 0;
 
 const isShowModal = ref(false)
 const pagoShowModal = ref(false)
@@ -460,7 +461,6 @@ const metodosDePago = async () => {
 };
 
 function generarComprobante(datosCompletos) {
-    console.log('Esto es en generar comprobante', datosCompletos);
     const fecha = new Date().toLocaleDateString();
     const hora = new Date().toLocaleTimeString();
 
@@ -593,22 +593,6 @@ function generarComprobante(datosCompletos) {
     ventanaComprobante.document.write(comprobanteHTML);
 }
 
-function formatearNumeroTarjeta(numero) {
-    // Eliminar espacios en blanco y guiones
-    let numeroSinEspacios = numero.replace(/\s+/g, '');
-
-    // Agrupar los caracteres en grupos de cuatro
-    let numeroFormateado = '';
-    for (let i = 0; i < numeroSinEspacios.length; i++) {
-        if (i > 0 && i % 4 === 0) {
-            numeroFormateado += ' ';
-        }
-        numeroFormateado += numeroSinEspacios[i];
-    }
-
-    return numeroFormateado;
-}
-
 /* Guardar datos de tarjeta */
 function guardarDatos() {
     let datosCompletos;
@@ -671,13 +655,10 @@ function guardarDatos() {
 
         const datosCompletosJSON = JSON.stringify(datosCompletos);
         guardarVenta(datosCompletosJSON);
-        generarComprobante(datosCompletos);
-
-        numeroTarjeta.value = '';
-        mesSeleccionado.value = '';
-        añoSeleccionado.value = '';
-        cvvInput.value = '';
-        dniInput.value = '';
+        setTimeout(() => {
+            generarComprobante(datosCompletos);
+        }, 2000);
+        console.log(datosCompletosJSON);
     } else {
         const montoTotal = totalAcumulado.value;
         const idCliente = clienteId.value;
@@ -721,28 +702,33 @@ function guardarDatos() {
 
         const datosCompletosJSON = JSON.stringify(datosCompletos);
         guardarVenta(datosCompletosJSON);
-        generarComprobante(datosCompletos);
+        setTimeout(() => {
+            generarComprobante(datosCompletos);
+        }, 2000);
+        console.log(datosCompletosJSON);
     }
 
 }
 
 const guardarVenta = async (datos) => {
-    console.log('estoy en guardar venta', datos);
     try {
-        const response = await axios.post(`http://localhost:8080/tfib/realizarPago`, datos);
-        pago.value = response.data;
+        const response = await axios.post(`http://localhost:8080/tfib/realizarPago`, datos, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        console.log(response.data);
     } catch (error) {
-        console.error(error.response.data);
+        console.error(error);
     }
 };
-
 
 const buscarArticulo = async () => {
     try {
         const response = await axios.get(`http://localhost:8080/tfib/buscarPorDescripcion/${descripcion.value}`);
         resultados.value = response.data;
     } catch (error) {
-        console.error(error);
+        console.log('input limpio o error de BD');
     }
 };
 
@@ -817,6 +803,7 @@ const consultarStock = () => {
     axios.get(`http://localhost:8080/tfib/obtenerStock/${idArticulo}/${idColor}/${idTalle}`)
         .then((stockResponse) => {
             cantidadStock.value = stockResponse.data.cantidad;
+            console.log(stockResponse.data);
         })
         .catch((error) => {
             console.error('Error al obtener el stock:', error);
