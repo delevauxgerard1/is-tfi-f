@@ -1,8 +1,8 @@
 # Front TFI "La tienda"
 
-Front para la realización del tfi requerido por la cátedra de Ingeniería del Software
+Front para la realización del tfi requerido por la cátedra de Ingeniería del Software.
 
-  Tiene 2 secciones:
+## Secciones
   
   Una es para visualizar los artículos
   
@@ -15,3 +15,7 @@ Front para la realización del tfi requerido por la cátedra de Ingeniería del 
   3. Gonza Gabriel Emanuel
   4. Madrid Maria Paula
   5. Torres Carrasco Gonzalo Guillermo
+
+## Tecnologías
+
+  . Vuejs
